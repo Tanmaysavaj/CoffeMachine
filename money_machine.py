@@ -1,29 +1,42 @@
-class CoffeeMaker:
-    """Models the machine that makes coffee."""
-    
+class MoneyMachine:
+    """Handles everything related to money transactions."""
+
+    CURRENCY = "$"
+
+    COIN_VALUES = {
+        "quarters": 0.25,
+        "dimes": 0.10,
+        "nickles": 0.05,
+        "pennies": 0.01
+    }
+
     def __init__(self):
-        self.resources = {
-            "water": 300,
-            "milk": 200,
-            "coffee": 100,
-        }
+        self.profit = 0
+        self.money_received = 0
 
     def report(self):
-        """Prints a report of all resources."""
-        print(f"Water: {self.resources['water']}ml")
-        print(f"Milk: {self.resources['milk']}ml")
-        print(f"Coffee: {self.resources['coffee']}g")
+        """Prints the current profit."""
+        print(f"Money: {self.CURRENCY}{self.profit}")
 
-    def is_resource_sufficient(self, drink):
-        """Checks if enough resources are available to make the drink."""
-        for item in drink.ingredients:
-            if drink.ingredients[item] > self.resources[item]:
-                print(f"Sorry there is not enough {item}.")
-                return False
-        return True
+    def process_coins(self):
+        """Calculates total from coins inserted."""
+        print("Please insert coins.")
+        self.money_received = 0  # Reset before each transaction
+        for coin, value in self.COIN_VALUES.items():
+            count = int(input(f"How many {coin}?: "))
+            self.money_received += count * value
+        return self.money_received
 
-    def make_coffee(self, order):
-        """Deducts the required ingredients from the resources."""
-        for item in order.ingredients:
-            self.resources[item] -= order.ingredients[item]
-        print(f"Here is your {order.name} ☕️. Enjoy!")
+    def make_payment(self, cost):
+        """Returns True if payment is accepted, or False if insufficient."""
+        self.process_coins()
+        if self.money_received >= cost:
+            change = round(self.money_received - cost, 2)
+            print(f"Here is {self.CURRENCY}{change} in change.")
+            self.profit += cost
+            self.money_received = 0
+            return True
+        else:
+            print("Sorry that's not enough money. Money refunded.")
+            self.money_received = 0
+            return False
