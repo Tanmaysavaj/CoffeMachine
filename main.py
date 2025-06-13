@@ -1,35 +1,24 @@
-class MenuItem:
-    """Models each menu item."""
+from menu import Menu
+from coffee_maker import CoffeeMaker
+from money_machine import MoneyMachine
 
-    def __init__(self, name, water, milk, coffee, cost):
-        self.name = name
-        self.cost = cost
-        self.ingredients = {
-            "water": water,
-            "milk": milk,
-            "coffee": coffee
-        }
+coffee_maker = CoffeeMaker()
+money_machine = MoneyMachine()
+menu = Menu()
 
+machine_on = True
 
-class Menu:
-    """Models the menu with drinks."""
-
-    def __init__(self):
-        self.menu = [
-            MenuItem(name="latte", water=200, milk=150, coffee=24, cost=2.5),
-            MenuItem(name="espresso", water=50, milk=0, coffee=18, cost=1.5),
-            MenuItem(name="cappuccino", water=250, milk=50, coffee=24, cost=3.0),
-        ]
-
-    def get_items(self):
-        """Returns all the names of available menu items."""
-        options = "/".join(item.name for item in self.menu)
-        return options
-
-    def find_drink(self, order_name):
-        """Searches the menu for a particular drink."""
-        for item in self.menu:
-            if item.name == order_name:
-                return item
-        print("Sorry, that item is not available.")
-        return None
+while machine_on:
+    options = menu.get_items()
+    choice = input(f"What would you like? ({options}): ").lower()
+    
+    if choice == "off":
+        machine_on = False
+    elif choice == "report":
+        money_machine.report()
+        coffee_maker.report()
+    else:
+        drink = menu.find_drink(choice)
+        if drink and coffee_maker.is_resource_sufficient(drink):
+            if money_machine.make_payment(drink.cost):
+                coffee_maker.make_coffee(drink)
